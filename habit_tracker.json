@@ -1,0 +1,316 @@
+{
+    "habits": {
+        "leggere": {
+            "created": "2025-08-01"
+        },
+        "reverso": {
+            "created": "2025-08-01"
+        },
+        "podcast": {
+            "created": "2025-08-01"
+        },
+        "film": {
+            "created": "2025-08-01"
+        },
+        "denti": {
+            "created": "2025-08-01"
+        },
+        "basale": {
+            "created": "2025-08-01"
+        },
+        "studio personale": {
+            "created": "2025-08-02"
+        },
+        "ginocchio": {
+            "created": "2025-08-04"
+        },
+        "mangiare sano": {
+            "created": "2025-08-09"
+        },
+        "sottolineate": {
+            "created": "2025-08-09"
+        },
+        "eat": {
+            "created": "2025-08-23"
+        }
+    },
+    "records": {
+        "2025-08-01": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": true,
+            "denti": false,
+            "basale": true
+        },
+        "2025-08-02": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": false,
+            "denti": true,
+            "basale": true,
+            "studio personale": true
+        },
+        "2025-08-03": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": true,
+            "denti": false,
+            "basale": true,
+            "studio personale": true
+        },
+        "2025-08-04": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": true,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true
+        },
+        "2025-08-05": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": false,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true
+        },
+        "2025-08-06": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": true,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true
+        },
+        "2025-08-07": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": false,
+            "film": false,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true
+        },
+        "2025-08-08": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": false,
+            "film": true,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true
+        },
+        "2025-08-09": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": false,
+            "film": true,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true,
+            "mangiare sano": true,
+            "sottolineate": true
+        },
+        "2025-08-10": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": false,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true,
+            "mangiare sano": true,
+            "sottolineate": true
+        },
+        "2025-08-11": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": false,
+            "denti": true,
+            "basale": true,
+            "studio personale": false,
+            "ginocchio": true,
+            "mangiare sano": false,
+            "sottolineate": false
+        },
+        "2025-08-12": {
+            "leggere": false,
+            "reverso": false,
+            "podcast": true,
+            "film": false,
+            "denti": false,
+            "basale": true,
+            "studio personale": false,
+            "ginocchio": true,
+            "mangiare sano": true,
+            "sottolineate": false
+        },
+        "2025-08-13": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": true,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true,
+            "mangiare sano": true,
+            "sottolineate": true
+        },
+        "2025-08-14": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": false,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true,
+            "mangiare sano": false,
+            "sottolineate": false
+        },
+        "2025-08-15": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": true,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true,
+            "mangiare sano": true,
+            "sottolineate": true
+        },
+        "2025-08-16": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": false,
+            "film": false,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true,
+            "mangiare sano": true,
+            "sottolineate": false
+        },
+        "2025-08-17": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": false,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true,
+            "mangiare sano": true,
+            "sottolineate": false
+        },
+        "2025-08-19": {
+            "leggere": false,
+            "reverso": true,
+            "podcast": true,
+            "film": false,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true,
+            "mangiare sano": true,
+            "sottolineate": false
+        },
+        "2025-08-20": {
+            "leggere": false,
+            "reverso": true,
+            "podcast": true,
+            "film": false,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true,
+            "mangiare sano": true,
+            "sottolineate": false
+        },
+        "2025-08-22": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": true,
+            "film": false,
+            "denti": true,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true,
+            "mangiare sano": false,
+            "sottolineate": false
+        },
+        "2025-08-23": {
+            "leggere": true,
+            "reverso": true,
+            "podcast": false,
+            "film": true,
+            "denti": false,
+            "basale": true,
+            "studio personale": true,
+            "ginocchio": true,
+            "mangiare sano": true,
+            "sottolineate": true,
+            "eat": true
+        }
+    },
+    "satisfaction_scores": {
+        "2025-08-01": 80,
+        "2025-08-02": 90,
+        "2025-08-03": 100,
+        "2025-08-04": 65,
+        "2025-08-05": 72,
+        "2025-08-06": 95,
+        "2025-08-07": 70,
+        "2025-08-08": 65,
+        "2025-08-09": 87,
+        "2025-08-10": 80,
+        "2025-08-11": 60,
+        "2025-08-13": 75,
+        "2025-08-14": 40,
+        "2025-08-15": 65,
+        "2025-08-16": 40,
+        "2025-08-17": 75,
+        "2025-08-19": 70,
+        "2025-08-20": 80,
+        "2025-08-21": 70,
+        "2025-08-22": 35,
+        "2025-08-23": 85
+    },
+    "daily_notes": {
+        "2025-08-01": "sono molto soddisfatto della giornata trascorsa perch\u00e8 ho fatto tutto ci\u00f2 che avevo pianificato di fare, purtroppo per\u00f2 il dover chiamare la dogana per sbloccare le valigie, il dover fare una sim norvegese mi ha fatto perdere molto tempo e non me la sono goduto molto",
+        "2025-08-02": "sono molto molto soddisfatto perch\u00e9 ho passato la mia prima giornata a trondheim, sono andato a casa di una signora e abbiamo parlato per oltre un'ora, e sono felice di essere riuscito a praticare lo speaking, inoltre sono riuscito anche ad iniziare a programmare in java, e ho portato a termine tutto ci\u00f2 che mi ero prefissato, per\u00f2 essendomi svegliato tardi non ho potuto sfruttare la mattina al massimo, per questo mi fermo a 90",
+        "2025-08-03": "sono molto soddisfatto della giornata di oggi, perch\u00e9 mi sono alzato presto e ho letto, e svolto tutti gli obiettivi che mi ero prefissato, senza perdere tempo e procrastinare, inoltre sono molto soddisfatto perch\u00e9 sono riuscito a resistere alle cattive abitudini, ho studiato molto bene java e sono soddisfatto perch\u00e9 sono riuscito a fare pure pi\u00f9 delle cose previste, inoltre sono riuscito anche a visitare trondheim",
+        "2025-08-04": "oggi purtroppo ho perso tanto tempo dietro le valigie bloccate in dogana, sia al mattino che al pomeriggio, sono riuscito comunque a fare la maggior parte delle cose che avevo in programma, per\u00f2 non sono pienamente soddisfatto perch\u00e8 ho fatto tutto ma poco, soprattutto perch\u00e8 volevo studiare java molto di pi\u00f9, ma purtroppo sono rimasto indietro",
+        "2025-08-05": "non sono molto soddisfatto della giornata di oggi perch\u00e8 mi sono svegliato pi\u00f9 tardi del previsto, alle 8.30, e ho perso un po' di tempo in generale, inoltre ho ceduto ad una brutta abitudine, ma non mi ha ostacolato troppo perch\u00e8 durata solo mezz'oretta, sono comunque abbastanza soddisfatto perch\u00e8 ho fatto gran parte delle cose che avevo in programma, anche se avrei voluto fare pi\u00f9 di java. Sono molto soddisfatto per\u00f2 perch\u00e8 sono riuscito a fare una chiamata con erik durata un'ora, dove abbiamo parlato tutto il tempo solo in inglese",
+        "2025-08-06": "sono molto soddisfatto per la giornata di oggi perch\u00e8 sono riuscito a concentrarmi al massimo con java soprattutto, ho fatto almeno 7 ore di quello, dalle 10 del mattino alle 20 di sera, tolta una pausa di un'oretta abbondante, il pranzo e qualche momento perso, non potevo comunque fare di meglio, mi sono portato molto avanti, poi sono riuscito a fare anche tutto il resto, inoltre mi sono svegliato anche presto, prima delle 7 e ho letto, quindi oggi \u00e8 stata una bella giornata sfruttata a pieno...non \u00e8 stata perfetta solo perch\u00e8 ho perso un po' di tempo, ma comunque mi ritengo soddisfatto per aver fatto tutto",
+        "2025-08-07": "Sono molto soddisfatto dei progressi che sto facendo in Java perch\u00e8 sto riuscendo finalmente a capire come funziona e a creare i miei primi programmi, inoltre riesco a capire anche quando si verificano gli errori da cosa sono causati, e questo mi rende molto soddisfatto; ho fatto anche gran parte delle cose oggi, per\u00f2 ho perso molto tempo, per quello complessivamente non sono molto soddisfatto, perch\u00e8 so che avrei potuto fare di pi\u00f9; inoltre ho aggiornato il mio CV e ora \u00e8 pronto per essere inviato, per\u00f2 di contro ho perso molto tempo su linkedin oggi",
+        "2025-08-08": "oggi sono soddisfatto perch\u00e8 sono riuscito a finire il corso di java, domani per\u00f2 devo mettermi sotto e fare pratica perch\u00e8 sulle cose basi vado molto bene, solo che mi perdo ancora un po' quando devo fare io dei programmi pi\u00f9 complessi; per il resto oggi ho perso molto tempo dietro le valigie, ma fortunatamente poi sono arrivate, quindi sono contento perch\u00e8 \u00e8 un grande peso in meno, la mia routine mattutina l'ho fatta, per\u00f2 poi durante la giornata ho perso abbastanza tempo, per questo non sono molto soddisfatto",
+        "2025-08-09": "sono molto soddisfatto per oggi perch\u00e8 sono riuscito a fare un mio programma da solo in java, inoltre ho portato a termine quasi tutte le cose che avevo in programma, ho preso al mercatino delle cose utili come le lenzuola e una poltrona, ho fatto il laboratorio di cloud e sono riuscito pure a vedere 2 puntate mentre facevo la lavatrice. Ma la cosa che mi ha reso in assoluto pi\u00f9 soddisfatto \u00e8 che sono andato al supermercato, e nonostante avessi voglia e nonostante avevo trovato una merendina che non contava tanto, sono riuscito a resistere e a non cedere alle tentazioni",
+        "2025-08-10": "non sono molto molto soddisfatto perch\u00e8 oggi mi sono svegliat tardi, in pi\u00f9 gran parte della mattina l'ho sprecata, ho ceduto alle cattive abitudini, ma nonostante ci\u00f2 poi mi sono messo di nuovo sotto e ho iniziato terraform, e sono molto soddisfatto del recupero, ma anche del fatto che mi \u00e8 piaciuto ancora di pi\u00f9 e credo proprio di aver trovato la mia strada nel lavoro che mi piacerebbe svolgere da grande. Inoltre andando al supermercato anche oggi sono riuscito a non cedere alle tentazioni, quindi sono molto soddisfatto anche di ci\u00f2",
+        "2025-08-11": "oggi come ieri, nonostante non ho svolto molto le cose che avevo in programma, sono comunque felice perch\u00e8 ho conosciuto molta gente, abbiamo fatto un'escursione tutti insieme ed \u00c3\u00a8 stato bello confrontarsi, parlare e condividere i nostri percorsi personali, l'unica cosa di cui non sono molto soddisfatto \u00c3\u00a8 che il mio inglese \u00c3\u00a8 ancora abbastanza scarso, devo migliorarlo insieme alla mia abilit\u00c3\u00a0 di programmazione, che entrambi sono i miei principali obbiettivi attualmente",
+        "2025-08-13": "sono soddisfatto della giornata di oggi perch\u00e8 ho finito il corso su terraform e devo dire che mi sento molto preparato, inoltre il mondo del cloud mi sta affascinando sempre di pi\u00f9 quindi sono molto contento e soddisfatto; il lato negativo invece \u00e8 che nella programmazione mi sento ancora ad un livello molto scarso, oggi dovevo fare un test per una posizione di amazon e ho rinunciato, sia perch\u00e8 non avevo la tessera dello studente e sia perch\u00e8 non mi sento pronto a svolgere un programma che verr\u00e0 valutato e questo mi causa parecchia frustrazione attualmente perch\u00e8 penso di essere ancora abbastanza indietro; per il resto oggi sono riuscito a portare a termine tutti i programmi che mi ero prefissato",
+        "2025-08-14": "oggi sono parzialmente soddisfatto perch\u00e8 mi sono alzato tardi, non ho fatto molto, ho letto solo mezz'ora, poi anche delle cose che avevo in programma ho fatto molto poco, per\u00f2 c'\u00e8 stato il BBQ all'universit\u00e0 e questo mi ha permesso di conoscere molte persone e praticare molto il mio inglese, inoltre ho seguito la lezione di cloud e anche questo mi ha richiesto 2 ore di tempo, per\u00f2 nonostante ci\u00f2, ho avuto una giornata abbastanza piena, che non ho sprecato troppo",
+        "2025-08-15": "oggi sono soddisfatto perch\u00e8 sono riuscito a fare tutto quello che avevo in programma di fare, per\u00f2 mi sento molto frustrato in questo momento, perch\u00e8 mi trovo molto scarso nella programmazione, oggi ho passato tutta la giornata a programmare in python e sono riuscito a fare ben poco con le mie capacit\u00e0, ho chiesto aiuto pi\u00f9 volte a chat GPT, perch\u00e8 da solo non sapevo proprio come fare, spero di riuscire a migliorare un po' in questo periodo qui; per il resto oggi sto aggiornando il tracker alle 17:30, stasera andr\u00f2 a fare giochi da tavolo con alcuni ragazzi qui a trondheim, e spero che almeno questo mi faccia sentire un po' pi\u00f9 soddisfatto",
+        "2025-08-16": "stamattina purtroppo mi sono alzato tardi, poi ho perso gran parte della mattinata a pulire casa con il mio coinquilino, e tra una cosa e l'altra ho fatto veramente poco, inoltre ho perso abbastanza tempo, quindi non sono molto soddisfatto, per\u00f2ho lavorato ad un mini progetto su python, ho fatto una rubrica e questo mi ha reso molto soddisfatto, perch\u00e8 \u00e8 andata bene, non posso ancora dire di ritenermi soddisfatto nella programmazione perch\u00e8 devo migliorare tanto, e su certe cose mi blocco ancora, per\u00f2 l'essere riuscito a fare la rubrica da solo oggi, mi ha reso soddisfatto, poi la serata l'ho passata al loften, abbiamo giocato e parlato e mi reputo abbastanza soddisfatto per quella",
+        "2025-08-17": "oggi non sono molto soddisfatto perch\u00e8 al mattino ho perso abbastanza tempo per preparare da mangiare, e per installare linux sul pc, non sono riuscito a fare la mia routine mattutina e mi dispiace, per\u00c3\u00b2 all'universit\u00c3\u00a0 \u00c3\u00a8 andata molto bene, perch\u00c3\u00a8 con la ragazza indiana che ho conosciuto ieri penso di poter raggiungere buoni risultati dal punto di vista scolastico perch\u00c3\u00a8 \u00c3\u00a8 molto brava, in pi\u00c3\u00b9 sempre con lei oltre al progetto di modern machine learning, far\u00c3\u00b2 anche il progetto di applied data science, insieme ad altre 5 persone, per cui in entrambe le materie ho grandi aspettative. Poi al pomeriggio mi sono visto con altri per ethical hacking e devo dire di essere rimasto comunque molto soddisfatto perch\u00c3\u00a8 mi hanno aiutato e chiarito di pi\u00c3\u00b9 le idee riguardo al progetto da fare",
+        "2025-08-21": "oggi sono abbastanza soddisfatto perch\u00e8 al mattino sono riuscito a fare tutto quello che avevo in programma, nostante ho impegnato un po' di tempo nel tagliarmi i capelli e nel fare la doccia, poi ho fatto il corso di cloud e sono comunque riuscito a programmare un po', poi la sera l'ho passata a casa di quella signora che mi ha prestato le tovaglie, perch\u00c3\u00a8 aveva organizzato una piccola festa a casa sua, eravamo circa 10 persone ed \u00c3\u00a8 stato molto bello perch\u00c3\u00a8 ho mangiato diversi tipi di salmone, la lasagna e varie cose, e finalmente sono riuscito a fare un pasto pi\u00c3\u00b9 buono rispetto alla mia media attuale da quando sono qui in norvegia",
+        "2025-08-22": "non sono molto soddisfatto per oggi perch[ stamattina mi sono svegliato tardi, in pi# ho sprecato molto tempo al cellualare e in cavolate varie, sono riuscito comunque a leggere e a fare gran parte delle cose, ho programmato abbastanza in python, per; [ anadata abbastanza male, non so se perch\u00e8 era particolarmente difficile o perch\u00e8 effettivamente io non sono stato abbastanza capace, per\u00f2 \u00e8 stata abbastanza frustrante la situazione. Ora sto andando all'universit\u00e0 a fare giochi da tavolo e spero che possa andare meglio la serata li",
+        "2025-08-23": "todsay i was happy"
+    }
+}
