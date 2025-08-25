@@ -54,6 +54,12 @@ Returning to option 2 in the menu, we can delete a habit as well—and, as menti
 
 <img width="521" height="287" alt="image" src="https://github.com/user-attachments/assets/1910e4e1-7705-4361-9751-90663459e5e1" />
 
+At the end, when we’ve finished filling out our diary and don’t have any changes to make to our habit tracker, option 9 allows us to close the program. When selected, the program greets us with a friendly message:
+
+<img width="468" height="47" alt="image" src="https://github.com/user-attachments/assets/69afcacb-4a53-4c48-918b-c7a242dc1461" />
+
+
+
 
 
 
