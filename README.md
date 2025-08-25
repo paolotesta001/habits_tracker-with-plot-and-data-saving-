@@ -1,1 +1,3 @@
-this is my vm![photo_5848411079988858478_w](https://github.com/user-attachments/assets/3800b6d7-38f7-4ae5-b5b8-cc73897a56a5)
+The goal of this program I did in Python is create an habits tracker to record what I have to do, in order to have more cleariness about which are my daily habits that I want to respect. I create this program to be more focus in my learning and in my daily activities. In this way I can monitored my progress, and have a panoramic about my performance over the course of the days. giving a score and a feedback regarding my daily satisfaction, and using a graph i can track my satisfaction score in order that tomorrow i can be more satisfied than today, or at least having under control what makes me feel good and what I can do to improve the following day 
+
+The program starts with a menu when we can choose different options
