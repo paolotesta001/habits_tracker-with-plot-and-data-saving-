@@ -23,10 +23,6 @@ We type “y” or “n” depending on whether we completed the activity that d
 
 <img width="410" height="218" alt="image" src="https://github.com/user-attachments/assets/e84bd720-4bc8-4c3c-b73f-90aa3a4ac246" />
 
-If we type something different from “y” or “n”—for example, by making a small typing error, the terminal corrects us and asks us to enter the right input. In this way, no errors or misunderstandings are created when saving the program.
-
-<img width="378" height="44" alt="image" src="https://github.com/user-attachments/assets/2e3f5b61-0f98-464c-bf59-f47974a841fc" />
-
 Once we finish filling out all the activities in the diary, we can insert a satisfaction score based on how we felt about the day. Along with the score, we can also write a short report about the day, for example, whether we are proud of it or not, what we did, and what made us happy or sad. This way, we can keep a record of our feelings.
 
 Now I’ll jump to option number 8, because it’s related to the score and report we entered. Here, we find a plot that records all our satisfaction scores, allowing us to keep track of our mood. This helps us replicate what made us have a good day or improve what made a day less satisfying. The main goal is to achieve a good score day after day (that’s everyone’s dream! 😁).
@@ -57,6 +53,10 @@ Returning to option 2 in the menu, we can delete a habit as well—and, as menti
 At the end, when we’ve finished filling out our diary and don’t have any changes to make to our habit tracker, option 9 allows us to close the program. When selected, the program greets us with a friendly message:
 
 <img width="468" height="47" alt="image" src="https://github.com/user-attachments/assets/69afcacb-4a53-4c48-918b-c7a242dc1461" />
+
+NB: If we type something different from “y” or “n”—for example, by making a small typing error—the terminal corrects us and asks us to enter the right input. This way, no errors or misunderstandings occur when saving the program. The same rule applies to every guided answer we have to provide to the program.
+
+<img width="378" height="44" alt="image" src="https://github.com/user-attachments/assets/2e3f5b61-0f98-464c-bf59-f47974a841fc" />
 
 
 
