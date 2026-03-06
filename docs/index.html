@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Habit Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="auth-screen">
+        <div id="auth-box">
+            <h1>Habit Tracker</h1>
+            <p id="auth-message"></p>
+            <input type="email" id="auth-email" placeholder="Email">
+            <input type="password" id="auth-password" placeholder="Password">
+            <button id="auth-login-btn" class="btn-primary">Log in</button>
+            <button id="auth-signup-btn" class="btn-secondary">Sign up</button>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        <!-- Header -->
+        <header id="header">
+            <h1>Habit Tracker</h1>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <span id="header-date"></span>
+                <button id="logout-btn" class="btn-icon" title="Log out" style="font-size:0.9rem;color:var(--text-dim);">&#9211;</button>
+            </div>
+        </header>
+
+        <!-- Views -->
+        <main id="main">
+            <!-- TODAY VIEW -->
+            <section id="view-today" class="view active">
+                <div id="today-status"></div>
+                <div id="today-habits"></div>
+                <div id="today-satisfaction" class="hidden">
+                    <label>Satisfaction (1-100)</label>
+                    <input type="range" id="satisfaction-slider" min="1" max="100" value="50">
+                    <span id="satisfaction-value">50</span>
+                </div>
+                <div id="today-note" class="hidden">
+                    <label>Daily note</label>
+                    <textarea id="note-input" rows="3" placeholder="How was your day?"></textarea>
+                </div>
+                <button id="save-today" class="btn-primary hidden">Save</button>
+            </section>
+
+            <!-- HISTORY VIEW -->
+            <section id="view-history" class="view">
+                <div class="history-nav">
+                    <button id="history-prev" class="btn-icon">&larr;</button>
+                    <span id="history-week-label"></span>
+                    <button id="history-next" class="btn-icon">&rarr;</button>
+                </div>
+                <div id="weekly-grid"></div>
+                <div id="past-day-section">
+                    <h3>Fill a past day</h3>
+                    <input type="date" id="past-date-input">
+                    <button id="fill-past-btn" class="btn-secondary">Fill</button>
+                </div>
+            </section>
+
+            <!-- STATS VIEW -->
+            <section id="view-stats" class="view">
+                <div class="stats-tabs">
+                    <button class="stats-tab active" data-tab="summary">Summary</button>
+                    <button class="stats-tab" data-tab="streaks">Streaks</button>
+                    <button class="stats-tab" data-tab="monthly">Monthly</button>
+                    <button class="stats-tab" data-tab="insights">Insights</button>
+                </div>
+                <div id="stats-content"></div>
+            </section>
+
+            <!-- SETTINGS VIEW -->
+            <section id="view-settings" class="view">
+                <h2>Habits</h2>
+                <div id="habits-list"></div>
+                <div class="add-habit-row">
+                    <input type="text" id="new-habit-input" placeholder="New habit name">
+                    <select id="new-habit-category">
+                        <option value="health">health</option>
+                        <option value="learning">learning</option>
+                        <option value="lifestyle">lifestyle</option>
+                        <option value="other">other</option>
+                    </select>
+                    <button id="add-habit-btn" class="btn-primary">Add</button>
+                </div>
+
+                <h2>Data</h2>
+                <button id="export-json-btn" class="btn-secondary">Export JSON</button>
+                <button id="import-json-btn" class="btn-secondary">Import JSON</button>
+                <input type="file" id="import-file" accept=".json" class="hidden">
+                <button id="export-csv-btn" class="btn-secondary">Export CSV</button>
+                <button id="import-python-btn" class="btn-secondary">Import from Python version</button>
+                <input type="file" id="import-python-file" accept=".json" class="hidden">
+            </section>
+        </main>
+
+        <!-- Bottom Nav -->
+        <nav id="bottom-nav">
+            <button class="nav-btn active" data-view="today">
+                <span class="nav-icon">&#10004;</span>
+                <span>Today</span>
+            </button>
+            <button class="nav-btn" data-view="history">
+                <span class="nav-icon">&#128197;</span>
+                <span>History</span>
+            </button>
+            <button class="nav-btn" data-view="stats">
+                <span class="nav-icon">&#128200;</span>
+                <span>Stats</span>
+            </button>
+            <button class="nav-btn" data-view="settings">
+                <span class="nav-icon">&#9881;</span>
+                <span>Settings</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Modal for filling past days -->
+    <div id="modal-overlay" class="hidden">
+        <div id="modal">
+            <div id="modal-header">
+                <h2 id="modal-title"></h2>
+                <button id="modal-close" class="btn-icon">&times;</button>
+            </div>
+            <div id="modal-body"></div>
+            <div id="modal-footer">
+                <button id="modal-save" class="btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

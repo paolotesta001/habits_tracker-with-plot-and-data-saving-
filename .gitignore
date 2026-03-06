@@ -1,0 +1,8 @@
+tempCodeRunnerFile.py
+__pycache__/
+*.pyc
+.vscode/
+*.jpg
+habit_export.csv
+habit_tracker.json
+.claude/
