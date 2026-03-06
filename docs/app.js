@@ -54,13 +54,21 @@ authSignupBtn.addEventListener("click", async () => {
 
     authMessage.textContent = "Creating account...";
     authMessage.className = "";
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) {
-        authMessage.textContent = error.message;
+    try {
+        const { data: signUpData, error } = await supabase.auth.signUp({ email, password });
+        if (error) {
+            authMessage.textContent = error.message;
+            authMessage.className = "auth-error";
+        } else if (signUpData?.user?.identities?.length === 0) {
+            authMessage.textContent = "Account already exists. Try logging in.";
+            authMessage.className = "auth-error";
+        } else {
+            authMessage.textContent = "Account created! You can now log in.";
+            authMessage.className = "auth-success";
+        }
+    } catch (e) {
+        authMessage.textContent = "Error: " + e.message;
         authMessage.className = "auth-error";
-    } else {
-        authMessage.textContent = "Check your email to confirm, then log in.";
-        authMessage.className = "auth-success";
     }
 });
 
