@@ -4,7 +4,7 @@
 const SUPABASE_URL = "https://jkgwzgxhceqrizgdkviz.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprZ3d6Z3hoY2Vxcml6Z2Rrdml6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3OTc1ODIsImV4cCI6MjA4ODM3MzU4Mn0.8uoSethDKgANr3A-LHWuj6JCLvMyqfxCm9q-QzWntjU";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================================
 // AUTH
@@ -39,7 +39,7 @@ authLoginBtn.addEventListener("click", async () => {
 
     authMessage.textContent = "Logging in...";
     authMessage.className = "";
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
         authMessage.textContent = error.message;
         authMessage.className = "auth-error";
@@ -55,7 +55,7 @@ authSignupBtn.addEventListener("click", async () => {
     authMessage.textContent = "Creating account...";
     authMessage.className = "";
     try {
-        const { data: signUpData, error } = await supabase.auth.signUp({ email, password });
+        const { data: signUpData, error } = await sb.auth.signUp({ email, password });
         if (error) {
             authMessage.textContent = error.message;
             authMessage.className = "auth-error";
@@ -73,11 +73,11 @@ authSignupBtn.addEventListener("click", async () => {
 });
 
 logoutBtn.addEventListener("click", async () => {
-    await supabase.auth.signOut();
+    await sb.auth.signOut();
 });
 
 // Listen for auth state changes
-supabase.auth.onAuthStateChange(async (event, session) => {
+sb.auth.onAuthStateChange(async (event, session) => {
     if (session?.user) {
         currentUser = session.user;
         await initApp();
@@ -142,7 +142,7 @@ async function saveData() {
 async function syncToCloud() {
     if (!currentUser) return;
     try {
-        await supabase.from("user_data").upsert({
+        await sb.from("user_data").upsert({
             id: currentUser.id,
             data: data,
             updated_at: new Date().toISOString(),
@@ -1031,7 +1031,7 @@ if ("serviceWorker" in navigator) {
 // INIT — check if already logged in
 // ============================================================
 (async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await sb.auth.getSession();
     if (session?.user) {
         currentUser = session.user;
         await initApp();
