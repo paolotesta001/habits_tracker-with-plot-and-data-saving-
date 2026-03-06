@@ -1,4 +1,4 @@
-const CACHE_NAME = "habit-tracker-v1";
+const CACHE_NAME = "habit-tracker-v3";
 const ASSETS = [
     "./",
     "./index.html",
@@ -26,7 +26,22 @@ self.addEventListener("activate", (e) => {
 });
 
 self.addEventListener("fetch", (e) => {
+    const url = e.request.url;
+
+    // Never cache Supabase API calls or CDN scripts
+    if (url.includes("supabase.co") || url.includes("cdn.jsdelivr.net")) {
+        e.respondWith(fetch(e.request));
+        return;
+    }
+
+    // For app assets: network first, fall back to cache
     e.respondWith(
-        caches.match(e.request).then((cached) => cached || fetch(e.request))
+        fetch(e.request)
+            .then((response) => {
+                const clone = response.clone();
+                caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+                return response;
+            })
+            .catch(() => caches.match(e.request))
     );
 });

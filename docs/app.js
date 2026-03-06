@@ -4,7 +4,15 @@
 const SUPABASE_URL = "https://jkgwzgxhceqrizgdkviz.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprZ3d6Z3hoY2Vxcml6Z2Rrdml6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3OTc1ODIsImV4cCI6MjA4ODM3MzU4Mn0.8uoSethDKgANr3A-LHWuj6JCLvMyqfxCm9q-QzWntjU";
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+        persistSession: true,
+        storageKey: "habit-tracker-auth",
+        storage: window.localStorage,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+    }
+});
 
 // ============================================================
 // AUTH
