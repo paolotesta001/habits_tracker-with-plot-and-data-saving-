@@ -88,7 +88,11 @@ logoutBtn.addEventListener("click", async () => {
 sb.auth.onAuthStateChange(async (event, session) => {
     if (session?.user) {
         currentUser = session.user;
-        await initApp();
+        try {
+            await initApp();
+        } catch (e) {
+            console.error("initApp failed:", e);
+        }
         showApp();
     } else {
         currentUser = null;
@@ -1042,7 +1046,7 @@ if ("serviceWorker" in navigator) {
     const { data: { session } } = await sb.auth.getSession();
     if (session?.user) {
         currentUser = session.user;
-        await initApp();
+        try { await initApp(); } catch (e) { console.error("initApp failed:", e); }
         showApp();
     } else {
         showAuth();
