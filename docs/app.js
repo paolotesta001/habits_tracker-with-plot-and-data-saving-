@@ -15,6 +15,22 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 });
 
 // ============================================================
+// THEME TOGGLE
+// ============================================================
+const themeToggle = document.getElementById("theme-toggle");
+if (localStorage.getItem("theme") === "light") {
+    document.documentElement.classList.add("light");
+    themeToggle.innerHTML = "&#9728;"; // sun
+}
+themeToggle.addEventListener("click", () => {
+    document.documentElement.classList.toggle("light");
+    const isLight = document.documentElement.classList.contains("light");
+    localStorage.setItem("theme", isLight ? "light" : "dark");
+    themeToggle.innerHTML = isLight ? "&#9728;" : "&#9790;"; // sun or moon
+    document.querySelector('meta[name="theme-color"]').content = isLight ? "#ffffff" : "#1a1a2e";
+});
+
+// ============================================================
 // AUTH
 // ============================================================
 const authScreen = document.getElementById("auth-screen");

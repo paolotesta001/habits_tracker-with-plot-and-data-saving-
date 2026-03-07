@@ -15,7 +15,22 @@
     --yellow: #f5c542;
     --text: #e0e0e0;
     --text-dim: #888;
+    --border: #333;
     --radius: 12px;
+}
+
+:root.light {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --surface2: #e8e8ed;
+    --accent: #6c63ff;
+    --accent-light: #5a52d5;
+    --green: #2ea87a;
+    --red: #d44060;
+    --yellow: #d4a630;
+    --text: #1a1a2e;
+    --text-dim: #666;
+    --border: #ccc;
 }
 
 body {
@@ -59,7 +74,7 @@ body {
     padding: 12px;
     margin-bottom: 12px;
     background: var(--surface2);
-    border: 1px solid #333;
+    border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
     font-size: 1rem;
@@ -180,7 +195,7 @@ main {
 .btn-secondary {
     background: var(--surface2);
     color: var(--text);
-    border: 1px solid #333;
+    border: 1px solid var(--border);
     padding: 10px 16px;
     border-radius: var(--radius);
     font-size: 0.9rem;
@@ -190,7 +205,7 @@ main {
     transition: background 0.2s;
 }
 
-.btn-secondary:hover { background: #2a2a4a; }
+.btn-secondary:hover { background: var(--surface); }
 
 .btn-icon {
     background: none;
@@ -300,7 +315,7 @@ main {
 #note-input {
     width: 100%;
     background: var(--surface2);
-    border: 1px solid #333;
+    border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
     padding: 10px;
@@ -361,10 +376,10 @@ main {
 
 .grid-table .mark-y { color: var(--green); font-weight: 700; }
 .grid-table .mark-n { color: var(--red); }
-.grid-table .mark-empty { color: #333; }
+.grid-table .mark-empty { color: var(--text-dim); }
 .grid-table .mark-y-inner { color: var(--green); font-weight: 700; }
 .grid-table .mark-n-inner { color: var(--red); }
-.grid-table .mark-empty-inner { color: #333; }
+.grid-table .mark-empty-inner { color: var(--text-dim); }
 .grid-table .clickable:hover { background: var(--surface2); }
 
 #past-day-section {
@@ -383,12 +398,12 @@ main {
     width: 100%;
     padding: 10px;
     background: var(--surface2);
-    border: 1px solid #333;
+    border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
     font-size: 0.95rem;
     margin-bottom: 8px;
-    color-scheme: dark;
+    color-scheme: dark light;
 }
 
 /* STATS VIEW */
@@ -601,7 +616,7 @@ main {
     min-width: 120px;
     padding: 10px;
     background: var(--surface);
-    border: 1px solid #333;
+    border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
     font-size: 0.9rem;
@@ -610,7 +625,7 @@ main {
 .add-habit-row select {
     padding: 10px;
     background: var(--surface);
-    border: 1px solid #333;
+    border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
     font-size: 0.9rem;
@@ -672,7 +687,7 @@ main {
 #modal-body textarea {
     width: 100%;
     background: var(--bg);
-    border: 1px solid #333;
+    border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
     padding: 10px;
