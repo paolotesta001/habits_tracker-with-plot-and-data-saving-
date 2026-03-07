@@ -1042,13 +1042,5 @@ if ("serviceWorker" in navigator) {
 // ============================================================
 // INIT — check if already logged in
 // ============================================================
-(async () => {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session?.user) {
-        currentUser = session.user;
-        try { await initApp(); } catch (e) { console.error("initApp failed:", e); }
-        showApp();
-    } else {
-        showAuth();
-    }
-})();
+// Handled by onAuthStateChange above; calling getSession() triggers it.
+sb.auth.getSession();
