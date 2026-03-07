@@ -453,7 +453,9 @@ function renderHistory() {
     const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     let html = '<table class="grid-table"><thead><tr><th>Habit</th>';
     weekDates.forEach((d, i) => {
-        html += `<th>${dayNames[i]}<br>${d.getDate()}</th>`;
+        const ds = dateStr(d);
+        const clickable = ds <= todayStr() ? `class="day-header clickable" data-date="${ds}"` : "";
+        html += `<th ${clickable} style="${ds <= todayStr() ? 'cursor:pointer;' : ''}">${dayNames[i]}<br>${d.getDate()}</th>`;
     });
     html += "</tr></thead><tbody>";
 
@@ -462,18 +464,26 @@ function renderHistory() {
         for (const d of weekDates) {
             const ds = dateStr(d);
             const rec = data.records[ds];
+            const clickAttr = ds <= todayStr() ? `class="day-cell clickable" data-date="${ds}" style="cursor:pointer;"` : "";
             if (rec && h in rec) {
                 html += rec[h]
-                    ? '<td class="mark-y">&#10003;</td>'
-                    : '<td class="mark-n">&ndash;</td>';
+                    ? `<td ${clickAttr}><span class="mark-y-inner">&#10003;</span></td>`
+                    : `<td ${clickAttr}><span class="mark-n-inner">&ndash;</span></td>`;
             } else {
-                html += '<td class="mark-empty">&middot;</td>';
+                html += `<td ${clickAttr}><span class="mark-empty-inner">&middot;</span></td>`;
             }
         }
         html += "</tr>";
     }
     html += "</tbody></table>";
     document.getElementById("weekly-grid").innerHTML = html;
+
+    // Make day headers and cells clickable to open the fill modal
+    document.querySelectorAll(".day-header.clickable, .day-cell.clickable").forEach(el => {
+        el.addEventListener("click", () => {
+            openDayModal(el.dataset.date);
+        });
+    });
 }
 
 document.getElementById("history-prev").addEventListener("click", () => { historyWeekOffset++; renderHistory(); });

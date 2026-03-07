@@ -362,6 +362,10 @@ main {
 .grid-table .mark-y { color: var(--green); font-weight: 700; }
 .grid-table .mark-n { color: var(--red); }
 .grid-table .mark-empty { color: #333; }
+.grid-table .mark-y-inner { color: var(--green); font-weight: 700; }
+.grid-table .mark-n-inner { color: var(--red); }
+.grid-table .mark-empty-inner { color: #333; }
+.grid-table .clickable:hover { background: var(--surface2); }
 
 #past-day-section {
     margin-top: 24px;
