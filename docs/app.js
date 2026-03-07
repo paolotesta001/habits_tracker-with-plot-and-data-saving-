@@ -232,6 +232,7 @@ let monthlyOffset = 0;
 // APP INIT (after login)
 // ============================================================
 async function initApp() {
+    todayChecksDate = "";  // Reset so renderToday picks up fresh data
     // Load from cloud, merge with local
     const cloudRow = await loadFromCloud();
     const localData = loadData();
@@ -326,6 +327,7 @@ const sliderVal = document.getElementById("satisfaction-value");
 const noteInput = document.getElementById("note-input");
 
 let todayChecks = {};
+let todayChecksDate = "";
 
 function renderToday() {
     const today = todayStr();
@@ -341,12 +343,16 @@ function renderToday() {
         return;
     }
 
-    const existing = data.records[today];
-    if (existing) {
-        todayChecks = { ...existing };
-    } else {
-        todayChecks = {};
-        active.forEach(h => todayChecks[h] = false);
+    // Only reset todayChecks when the date changes or on first load
+    if (todayChecksDate !== today) {
+        todayChecksDate = today;
+        const existing = data.records[today];
+        if (existing) {
+            todayChecks = { ...existing };
+        } else {
+            todayChecks = {};
+            active.forEach(h => todayChecks[h] = false);
+        }
     }
 
     if (existing) {
