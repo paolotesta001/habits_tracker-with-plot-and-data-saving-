@@ -163,7 +163,7 @@ async function syncToCloud() {
 async function loadFromCloud() {
     if (!currentUser) return null;
     try {
-        const { data: row, error } = await supabase
+        const { data: row, error } = await sb
             .from("user_data")
             .select("data, updated_at")
             .eq("id", currentUser.id)
