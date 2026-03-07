@@ -11,7 +11,6 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         storage: window.localStorage,
         autoRefreshToken: true,
         detectSessionInUrl: true,
-        lock: { acquireTimeout: 10000 },
     }
 });
 
@@ -344,9 +343,9 @@ function renderToday() {
     }
 
     // Only reset todayChecks when the date changes or on first load
+    const existing = data.records[today];
     if (todayChecksDate !== today) {
         todayChecksDate = today;
-        const existing = data.records[today];
         if (existing) {
             todayChecks = { ...existing };
         } else {
