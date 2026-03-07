@@ -11,6 +11,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         storage: window.localStorage,
         autoRefreshToken: true,
         detectSessionInUrl: true,
+        lock: { acquireTimeout: 10000 },
     }
 });
 
@@ -27,6 +28,7 @@ const authSignupBtn = document.getElementById("auth-signup-btn");
 const logoutBtn = document.getElementById("logout-btn");
 
 let currentUser = null;
+let appInitialized = false;
 
 function showAuth() {
     authScreen.classList.remove("hidden");
@@ -88,14 +90,18 @@ logoutBtn.addEventListener("click", async () => {
 sb.auth.onAuthStateChange(async (event, session) => {
     if (session?.user) {
         currentUser = session.user;
-        try {
-            await initApp();
-        } catch (e) {
-            console.error("initApp failed:", e);
+        if (!appInitialized) {
+            appInitialized = true;
+            try {
+                await initApp();
+            } catch (e) {
+                console.error("initApp failed:", e);
+            }
+            showApp();
         }
-        showApp();
     } else {
         currentUser = null;
+        appInitialized = false;
         showAuth();
     }
 });
