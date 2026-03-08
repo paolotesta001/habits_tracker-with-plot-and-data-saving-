@@ -1,20 +1,4 @@
 // ============================================================
-// SUPABASE CONFIG
-// ============================================================
-const SUPABASE_URL = "https://jkgwzgxhceqrizgdkviz.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprZ3d6Z3hoY2Vxcml6Z2Rrdml6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3OTc1ODIsImV4cCI6MjA4ODM3MzU4Mn0.8uoSethDKgANr3A-LHWuj6JCLvMyqfxCm9q-QzWntjU";
-
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: {
-        persistSession: true,
-        storageKey: "habit-tracker-auth",
-        storage: window.localStorage,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-    }
-});
-
-// ============================================================
 // THEME TOGGLE
 // ============================================================
 const themeToggle = document.getElementById("theme-toggle");
@@ -28,99 +12,6 @@ themeToggle.addEventListener("click", () => {
     localStorage.setItem("theme", isLight ? "light" : "dark");
     themeToggle.innerHTML = isLight ? "&#9728;" : "&#9790;"; // sun or moon
     document.querySelector('meta[name="theme-color"]').content = isLight ? "#ffffff" : "#1a1a2e";
-});
-
-// ============================================================
-// AUTH
-// ============================================================
-const authScreen = document.getElementById("auth-screen");
-const appEl = document.getElementById("app");
-const authMessage = document.getElementById("auth-message");
-const authEmail = document.getElementById("auth-email");
-const authPassword = document.getElementById("auth-password");
-const authLoginBtn = document.getElementById("auth-login-btn");
-const authSignupBtn = document.getElementById("auth-signup-btn");
-const logoutBtn = document.getElementById("logout-btn");
-
-let currentUser = null;
-let appInitialized = false;
-
-function showAuth() {
-    authScreen.classList.remove("hidden");
-    appEl.classList.add("hidden");
-    authMessage.textContent = "";
-    authMessage.className = "";
-}
-
-function showApp() {
-    authScreen.classList.add("hidden");
-    appEl.classList.remove("hidden");
-}
-
-async function startApp(user) {
-    currentUser = user;
-    if (!appInitialized) {
-        appInitialized = true;
-        try { await initApp(); } catch (e) { console.error("initApp failed:", e); }
-        showApp();
-    }
-}
-
-authLoginBtn.addEventListener("click", async () => {
-    const email = authEmail.value.trim();
-    const password = authPassword.value;
-    if (!email || !password) { authMessage.textContent = "Fill in both fields."; return; }
-
-    authMessage.textContent = "Logging in...";
-    authMessage.className = "";
-    const { data: loginData, error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) {
-        authMessage.textContent = error.message;
-        authMessage.className = "auth-error";
-    } else if (loginData?.user) {
-        await startApp(loginData.user);
-    }
-});
-
-authSignupBtn.addEventListener("click", async () => {
-    const email = authEmail.value.trim();
-    const password = authPassword.value;
-    if (!email || !password) { authMessage.textContent = "Fill in both fields."; return; }
-    if (password.length < 6) { authMessage.textContent = "Password must be at least 6 characters."; authMessage.className = "auth-error"; return; }
-
-    authMessage.textContent = "Creating account...";
-    authMessage.className = "";
-    try {
-        const { data: signUpData, error } = await sb.auth.signUp({ email, password });
-        if (error) {
-            authMessage.textContent = error.message;
-            authMessage.className = "auth-error";
-        } else if (signUpData?.user?.identities?.length === 0) {
-            authMessage.textContent = "Account already exists. Try logging in.";
-            authMessage.className = "auth-error";
-        } else {
-            authMessage.textContent = "Account created! You can now log in.";
-            authMessage.className = "auth-success";
-        }
-    } catch (e) {
-        authMessage.textContent = "Error: " + e.message;
-        authMessage.className = "auth-error";
-    }
-});
-
-logoutBtn.addEventListener("click", async () => {
-    await sb.auth.signOut();
-});
-
-// Listen for auth state changes (handles sign-out and cross-tab session restore)
-sb.auth.onAuthStateChange(async (event, session) => {
-    if (session?.user) {
-        await startApp(session.user);
-    } else {
-        currentUser = null;
-        appInitialized = false;
-        showAuth();
-    }
 });
 
 // ============================================================
@@ -138,16 +29,16 @@ function loadData() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
         try {
-            const data = JSON.parse(raw);
-            data.habits = data.habits || {};
-            data.records = data.records || {};
-            data.satisfaction_scores = data.satisfaction_scores || {};
-            data.daily_notes = data.daily_notes || {};
-            data.categories = data.categories || { ...DEFAULT_CATEGORIES };
-            for (const h in data.habits) {
-                if (data.habits[h].active === undefined) data.habits[h].active = true;
+            const d = JSON.parse(raw);
+            d.habits = d.habits || {};
+            d.records = d.records || {};
+            d.satisfaction_scores = d.satisfaction_scores || {};
+            d.daily_notes = d.daily_notes || {};
+            d.categories = d.categories || { ...DEFAULT_CATEGORIES };
+            for (const h in d.habits) {
+                if (d.habits[h].active === undefined) d.habits[h].active = true;
             }
-            return data;
+            return d;
         } catch {
             return emptyData();
         }
@@ -165,45 +56,8 @@ function emptyData() {
     };
 }
 
-function saveDataLocal() {
+function saveData() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-async function saveData() {
-    saveDataLocal();
-    await syncToCloud();
-}
-
-async function syncToCloud() {
-    if (!currentUser) return;
-    try {
-        await sb.from("user_data").upsert({
-            id: currentUser.id,
-            data: data,
-            updated_at: new Date().toISOString(),
-        });
-    } catch (e) {
-        console.warn("Cloud sync failed:", e);
-    }
-}
-
-async function loadFromCloud() {
-    if (!currentUser) return null;
-    try {
-        const { data: row, error } = await sb
-            .from("user_data")
-            .select("data, updated_at")
-            .eq("id", currentUser.id)
-            .single();
-        if (error && error.code !== "PGRST116") {
-            console.warn("Cloud load error:", error);
-            return null;
-        }
-        return row;
-    } catch (e) {
-        console.warn("Cloud load failed:", e);
-        return null;
-    }
 }
 
 function todayStr() {
@@ -241,74 +95,9 @@ function getHabitsByCategory(activeOnly = true) {
 // ============================================================
 // GLOBALS
 // ============================================================
-let data = emptyData();
+let data = loadData();
 let historyWeekOffset = 0;
 let monthlyOffset = 0;
-
-// ============================================================
-// APP INIT (after login)
-// ============================================================
-async function initApp() {
-    todayChecksDate = "";  // Reset so renderToday picks up fresh data
-    // Load from cloud, merge with local
-    const cloudRow = await loadFromCloud();
-    const localData = loadData();
-
-    if (cloudRow && cloudRow.data && Object.keys(cloudRow.data.habits || {}).length > 0) {
-        // Cloud has data — use it
-        data = cloudRow.data;
-        data.habits = data.habits || {};
-        data.records = data.records || {};
-        data.satisfaction_scores = data.satisfaction_scores || {};
-        data.daily_notes = data.daily_notes || {};
-        data.categories = data.categories || { ...DEFAULT_CATEGORIES };
-        for (const h in data.habits) {
-            if (data.habits[h].active === undefined) data.habits[h].active = true;
-        }
-
-        // If local has data that cloud doesn't, merge local into cloud
-        if (Object.keys(localData.habits).length > 0) {
-            let merged = false;
-            for (const h in localData.habits) {
-                if (!data.habits[h]) {
-                    data.habits[h] = localData.habits[h];
-                    merged = true;
-                }
-            }
-            for (const d in localData.records) {
-                if (!data.records[d]) {
-                    data.records[d] = localData.records[d];
-                    merged = true;
-                }
-            }
-            for (const d in localData.satisfaction_scores) {
-                if (!data.satisfaction_scores[d]) {
-                    data.satisfaction_scores[d] = localData.satisfaction_scores[d];
-                    merged = true;
-                }
-            }
-            for (const d in localData.daily_notes) {
-                if (!data.daily_notes[d]) {
-                    data.daily_notes[d] = localData.daily_notes[d];
-                    merged = true;
-                }
-            }
-            if (merged) {
-                await syncToCloud();
-            }
-        }
-    } else if (Object.keys(localData.habits).length > 0) {
-        // No cloud data but local data exists — push local to cloud
-        data = localData;
-        await syncToCloud();
-    } else {
-        data = emptyData();
-    }
-
-    saveDataLocal();
-    document.getElementById("header-date").textContent = todayStr();
-    renderToday();
-}
 
 // ============================================================
 // NAVIGATION
@@ -429,12 +218,12 @@ slider.addEventListener("input", () => {
     sliderVal.textContent = slider.value;
 });
 
-saveBtn.addEventListener("click", async () => {
+saveBtn.addEventListener("click", () => {
     const today = todayStr();
     data.records[today] = { ...todayChecks };
     data.satisfaction_scores[today] = parseInt(slider.value);
     data.daily_notes[today] = noteInput.value.trim();
-    await saveData();
+    saveData();
     todayStatus.textContent = "Saved!";
     todayStatus.style.background = "rgba(78,204,163,0.15)";
     todayStatus.style.color = "var(--green)";
@@ -577,11 +366,11 @@ function openDayModal(dayStr) {
     renderModalBody();
     overlay.classList.remove("hidden");
 
-    document.getElementById("modal-save").onclick = async () => {
+    document.getElementById("modal-save").onclick = () => {
         data.records[dayStr] = { ...checks };
         data.satisfaction_scores[dayStr] = parseInt(document.getElementById("modal-sat").value);
         data.daily_notes[dayStr] = document.getElementById("modal-note").value.trim();
-        await saveData();
+        saveData();
         overlay.classList.add("hidden");
         renderHistory();
     };
@@ -932,13 +721,13 @@ function renderSettings() {
     list.innerHTML = html || '<p style="color:var(--text-dim)">No habits yet.</p>';
 }
 
-window.toggleHabit = async function(name) {
+window.toggleHabit = function(name) {
     data.habits[name].active = !data.habits[name].active;
-    await saveData();
+    saveData();
     renderSettings();
 };
 
-document.getElementById("add-habit-btn").addEventListener("click", async () => {
+document.getElementById("add-habit-btn").addEventListener("click", () => {
     const input = document.getElementById("new-habit-input");
     const catSelect = document.getElementById("new-habit-category");
     const name = input.value.trim();
@@ -947,7 +736,7 @@ document.getElementById("add-habit-btn").addEventListener("click", async () => {
     if (data.habits[name]) {
         if (!data.habits[name].active) {
             data.habits[name].active = true;
-            await saveData();
+            saveData();
             renderSettings();
         } else {
             alert("Habit already exists.");
@@ -965,7 +754,7 @@ document.getElementById("add-habit-btn").addEventListener("click", async () => {
         data.categories[cat].push(name);
     }
 
-    await saveData();
+    saveData();
     input.value = "";
     renderSettings();
 });
@@ -1003,13 +792,13 @@ document.getElementById("import-file").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = async (ev) => {
+    reader.onload = (ev) => {
         try {
             const imported = JSON.parse(ev.target.result);
             if (imported.habits && imported.records) {
                 data = imported;
                 data.categories = data.categories || { ...DEFAULT_CATEGORIES };
-                await saveData();
+                saveData();
                 alert("Data imported successfully!");
                 renderToday();
             } else {
@@ -1030,7 +819,7 @@ document.getElementById("import-python-file").addEventListener("change", (e) => 
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = async (ev) => {
+    reader.onload = (ev) => {
         try {
             const py = JSON.parse(ev.target.result);
             if (py.habits && py.records) {
@@ -1042,7 +831,7 @@ document.getElementById("import-python-file").addEventListener("change", (e) => 
                 for (const h in data.habits) {
                     if (data.habits[h].active === undefined) data.habits[h].active = true;
                 }
-                await saveData();
+                saveData();
                 alert("Python data imported! Your history is now in the web app.");
                 renderToday();
             } else {
@@ -1079,18 +868,7 @@ if ("serviceWorker" in navigator) {
 }
 
 // ============================================================
-// INIT — check if already logged in
+// INIT
 // ============================================================
-(async () => {
-    try {
-        const { data: { session } } = await sb.auth.getSession();
-        if (session?.user) {
-            await startApp(session.user);
-        } else {
-            showAuth();
-        }
-    } catch (e) {
-        console.error("getSession failed:", e);
-        showAuth();
-    }
-})();
+document.getElementById("header-date").textContent = todayStr();
+renderToday();

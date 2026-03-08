@@ -11,29 +11,15 @@
     <link rel="icon" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-    <!-- Auth Screen -->
-    <div id="auth-screen">
-        <div id="auth-box">
-            <h1>Habit Tracker</h1>
-            <p id="auth-message"></p>
-            <input type="email" id="auth-email" placeholder="Email">
-            <input type="password" id="auth-password" placeholder="Password">
-            <button id="auth-login-btn" class="btn-primary">Log in</button>
-            <button id="auth-signup-btn" class="btn-secondary">Sign up</button>
-        </div>
-    </div>
-
-    <div id="app" class="hidden">
+    <div id="app">
         <!-- Header -->
         <header id="header">
             <h1>Habit Tracker</h1>
             <div style="display:flex;align-items:center;gap:8px;">
                 <span id="header-date"></span>
                 <button id="theme-toggle" class="btn-icon" title="Toggle theme" style="font-size:1.1rem;">&#9790;</button>
-                <button id="logout-btn" class="btn-icon" title="Log out" style="font-size:0.9rem;color:var(--text-dim);">&#9211;</button>
             </div>
         </header>
 
