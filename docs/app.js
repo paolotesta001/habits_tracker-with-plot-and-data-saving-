@@ -15,36 +15,49 @@ themeToggle.addEventListener("click", () => {
 });
 
 // ============================================================
-// DATA LAYER
+// DATA LAYER (IndexedDB)
 // ============================================================
-const STORAGE_KEY = "habit_tracker_data";
+const DB_NAME = "HabitTrackerDB";
+const DB_VERSION = 1;
+const DB_STORE = "appdata";
+const DB_KEY = "habit_tracker_data";
+const LS_KEY = "habit_tracker_data"; // for migration
+
+let idb = null;
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        if (idb) return resolve(idb);
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+            e.target.result.createObjectStore(DB_STORE);
+        };
+        req.onsuccess = (e) => { idb = e.target.result; resolve(idb); };
+        req.onerror = (e) => reject(e.target.error);
+    });
+}
+
+function idbGet(key) {
+    return new Promise((resolve, reject) => {
+        const req = idb.transaction(DB_STORE).objectStore(DB_STORE).get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+    });
+}
+
+function idbPut(key, value) {
+    return new Promise((resolve, reject) => {
+        const req = idb.transaction(DB_STORE, "readwrite").objectStore(DB_STORE).put(value, key);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+    });
+}
 
 const DEFAULT_CATEGORIES = {
     health: ["brush your teeth", "basal insulin", "eat healthy", "knee supplement"],
     learning: ["read", "reverso", "self-study", "podcast"],
     lifestyle: ["movie", "wake up at 7", "scheduling tomorrow", "No bad habits"],
 };
-
-function loadData() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-        try {
-            const d = JSON.parse(raw);
-            d.habits = d.habits || {};
-            d.records = d.records || {};
-            d.satisfaction_scores = d.satisfaction_scores || {};
-            d.daily_notes = d.daily_notes || {};
-            d.categories = d.categories || { ...DEFAULT_CATEGORIES };
-            for (const h in d.habits) {
-                if (d.habits[h].active === undefined) d.habits[h].active = true;
-            }
-            return d;
-        } catch {
-            return emptyData();
-        }
-    }
-    return emptyData();
-}
 
 function emptyData() {
     return {
@@ -56,8 +69,38 @@ function emptyData() {
     };
 }
 
-function saveData() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+function normalizeData(d) {
+    d.habits = d.habits || {};
+    d.records = d.records || {};
+    d.satisfaction_scores = d.satisfaction_scores || {};
+    d.daily_notes = d.daily_notes || {};
+    d.categories = d.categories || { ...DEFAULT_CATEGORIES };
+    for (const h in d.habits) {
+        if (d.habits[h].active === undefined) d.habits[h].active = true;
+    }
+    return d;
+}
+
+async function loadData() {
+    await openDB();
+    // Try IndexedDB first
+    let d = await idbGet(DB_KEY);
+    if (d) return normalizeData(d);
+    // Migrate from localStorage if exists
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+        try {
+            d = normalizeData(JSON.parse(raw));
+            await idbPut(DB_KEY, d);
+            localStorage.removeItem(LS_KEY); // clean up old storage
+            return d;
+        } catch { /* fall through */ }
+    }
+    return emptyData();
+}
+
+async function saveData() {
+    await idbPut(DB_KEY, data);
 }
 
 function todayStr() {
@@ -95,7 +138,7 @@ function getHabitsByCategory(activeOnly = true) {
 // ============================================================
 // GLOBALS
 // ============================================================
-let data = loadData();
+let data = emptyData();
 let historyWeekOffset = 0;
 let monthlyOffset = 0;
 
@@ -218,12 +261,12 @@ slider.addEventListener("input", () => {
     sliderVal.textContent = slider.value;
 });
 
-saveBtn.addEventListener("click", () => {
+saveBtn.addEventListener("click", async () => {
     const today = todayStr();
     data.records[today] = { ...todayChecks };
     data.satisfaction_scores[today] = parseInt(slider.value);
     data.daily_notes[today] = noteInput.value.trim();
-    saveData();
+    await saveData();
     todayStatus.textContent = "Saved!";
     todayStatus.style.background = "rgba(78,204,163,0.15)";
     todayStatus.style.color = "var(--green)";
@@ -366,11 +409,11 @@ function openDayModal(dayStr) {
     renderModalBody();
     overlay.classList.remove("hidden");
 
-    document.getElementById("modal-save").onclick = () => {
+    document.getElementById("modal-save").onclick = async () => {
         data.records[dayStr] = { ...checks };
         data.satisfaction_scores[dayStr] = parseInt(document.getElementById("modal-sat").value);
         data.daily_notes[dayStr] = document.getElementById("modal-note").value.trim();
-        saveData();
+        await saveData();
         overlay.classList.add("hidden");
         renderHistory();
     };
@@ -721,13 +764,13 @@ function renderSettings() {
     list.innerHTML = html || '<p style="color:var(--text-dim)">No habits yet.</p>';
 }
 
-window.toggleHabit = function(name) {
+window.toggleHabit = async function(name) {
     data.habits[name].active = !data.habits[name].active;
-    saveData();
+    await saveData();
     renderSettings();
 };
 
-document.getElementById("add-habit-btn").addEventListener("click", () => {
+document.getElementById("add-habit-btn").addEventListener("click", async () => {
     const input = document.getElementById("new-habit-input");
     const catSelect = document.getElementById("new-habit-category");
     const name = input.value.trim();
@@ -736,7 +779,7 @@ document.getElementById("add-habit-btn").addEventListener("click", () => {
     if (data.habits[name]) {
         if (!data.habits[name].active) {
             data.habits[name].active = true;
-            saveData();
+            await saveData();
             renderSettings();
         } else {
             alert("Habit already exists.");
@@ -754,7 +797,7 @@ document.getElementById("add-habit-btn").addEventListener("click", () => {
         data.categories[cat].push(name);
     }
 
-    saveData();
+    await saveData();
     input.value = "";
     renderSettings();
 });
@@ -792,13 +835,13 @@ document.getElementById("import-file").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
         try {
             const imported = JSON.parse(ev.target.result);
             if (imported.habits && imported.records) {
                 data = imported;
                 data.categories = data.categories || { ...DEFAULT_CATEGORIES };
-                saveData();
+                await saveData();
                 alert("Data imported successfully!");
                 renderToday();
             } else {
@@ -819,7 +862,7 @@ document.getElementById("import-python-file").addEventListener("change", (e) => 
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
         try {
             const py = JSON.parse(ev.target.result);
             if (py.habits && py.records) {
@@ -831,7 +874,7 @@ document.getElementById("import-python-file").addEventListener("change", (e) => 
                 for (const h in data.habits) {
                     if (data.habits[h].active === undefined) data.habits[h].active = true;
                 }
-                saveData();
+                await saveData();
                 alert("Python data imported! Your history is now in the web app.");
                 renderToday();
             } else {
@@ -870,5 +913,8 @@ if ("serviceWorker" in navigator) {
 // ============================================================
 // INIT
 // ============================================================
-document.getElementById("header-date").textContent = todayStr();
-renderToday();
+(async () => {
+    data = await loadData();
+    document.getElementById("header-date").textContent = todayStr();
+    renderToday();
+})();

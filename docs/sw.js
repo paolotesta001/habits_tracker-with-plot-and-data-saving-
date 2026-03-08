@@ -1,4 +1,4 @@
-const CACHE_NAME = "habit-tracker-v12";
+const CACHE_NAME = "habit-tracker-v13";
 const ASSETS = [
     "./",
     "./index.html",
@@ -28,8 +28,8 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
     const url = e.request.url;
 
-    // Never cache Supabase API calls, CDN scripts, or non-http(s) requests
-    if (!url.startsWith("http") || url.includes("supabase.co") || url.includes("cdn.jsdelivr.net")) {
+    // Never cache non-http(s) requests
+    if (!url.startsWith("http")) {
         return;
     }
 
