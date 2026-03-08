@@ -57,6 +57,15 @@ function showApp() {
     appEl.classList.remove("hidden");
 }
 
+async function startApp(user) {
+    currentUser = user;
+    if (!appInitialized) {
+        appInitialized = true;
+        try { await initApp(); } catch (e) { console.error("initApp failed:", e); }
+        showApp();
+    }
+}
+
 authLoginBtn.addEventListener("click", async () => {
     const email = authEmail.value.trim();
     const password = authPassword.value;
@@ -64,10 +73,12 @@ authLoginBtn.addEventListener("click", async () => {
 
     authMessage.textContent = "Logging in...";
     authMessage.className = "";
-    const { error } = await sb.auth.signInWithPassword({ email, password });
+    const { data: loginData, error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
         authMessage.textContent = error.message;
         authMessage.className = "auth-error";
+    } else if (loginData?.user) {
+        await startApp(loginData.user);
     }
 });
 
@@ -101,19 +112,10 @@ logoutBtn.addEventListener("click", async () => {
     await sb.auth.signOut();
 });
 
-// Listen for auth state changes
+// Listen for auth state changes (handles sign-out and cross-tab session restore)
 sb.auth.onAuthStateChange(async (event, session) => {
     if (session?.user) {
-        currentUser = session.user;
-        if (!appInitialized) {
-            appInitialized = true;
-            try {
-                await initApp();
-            } catch (e) {
-                console.error("initApp failed:", e);
-            }
-            showApp();
-        }
+        await startApp(session.user);
     } else {
         currentUser = null;
         appInitialized = false;
@@ -1079,5 +1081,16 @@ if ("serviceWorker" in navigator) {
 // ============================================================
 // INIT — check if already logged in
 // ============================================================
-// Handled by onAuthStateChange above; calling getSession() triggers it.
-sb.auth.getSession();
+(async () => {
+    try {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session?.user) {
+            await startApp(session.user);
+        } else {
+            showAuth();
+        }
+    } catch (e) {
+        console.error("getSession failed:", e);
+        showAuth();
+    }
+})();
