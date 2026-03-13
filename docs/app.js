@@ -177,6 +177,7 @@ const noteInput = document.getElementById("note-input");
 
 let todayChecks = {};
 let todayChecksDate = "";
+let todayEditing = false;
 
 function renderToday() {
     const today = todayStr();
@@ -185,7 +186,7 @@ function renderToday() {
 
     if (active.length === 0) {
         todayHabits.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:40px 0;">No active habits. Add some in Settings.</p>';
-        todayStatus.textContent = "";
+        todayStatus.innerHTML = "";
         todaySatisfaction.classList.add("hidden");
         todayNote.classList.add("hidden");
         saveBtn.classList.add("hidden");
@@ -204,29 +205,42 @@ function renderToday() {
         }
     }
 
-    // Build summary
-    const doneCount = active.filter(h => todayChecks[h]).length;
-    const totalCount = active.length;
-    const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
-
-    if (existing) {
-        const doneList = active.filter(h => existing[h]);
-        const missedList = active.filter(h => existing[h] === false);
+    // COMPACT MODE: already saved today and not editing
+    if (existing && !todayEditing) {
+        const doneCount = active.filter(h => existing[h]).length;
+        const totalCount = active.length;
+        const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
         const summaryColor = pct === 100 ? "var(--green)" : pct >= 50 ? "var(--yellow)" : "var(--red)";
+
         todayStatus.innerHTML = `
-            <div style="font-size:1.1rem;font-weight:600;margin-bottom:6px;">${doneCount}/${totalCount} done <span style="color:${summaryColor}">(${pct}%)</span></div>
-            <div class="today-summary-bar" style="height:6px;border-radius:3px;background:var(--surface);overflow:hidden;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <div style="font-size:1.3rem;font-weight:700;">${doneCount}/${totalCount} <span style="color:${summaryColor}">${pct}%</span></div>
+                    <div style="font-size:0.75rem;color:var(--text-dim);margin-top:2px;">${today}</div>
+                </div>
+                <button id="today-edit-btn" class="btn-secondary" style="padding:8px 18px;font-size:0.85rem;">Edit</button>
+            </div>
+            <div style="height:6px;border-radius:3px;background:var(--surface);overflow:hidden;margin-top:10px;">
                 <div style="width:${pct}%;height:100%;background:${summaryColor};border-radius:3px;transition:width 0.3s;"></div>
             </div>
-            ${doneList.length > 0 ? `<div style="font-size:0.78rem;color:var(--green);margin-bottom:2px;">&#10003; ${doneList.join(", ")}</div>` : ""}
-            ${missedList.length > 0 ? `<div style="font-size:0.78rem;color:var(--text-dim);">&#9711; ${missedList.join(", ")}</div>` : ""}
-            <div style="font-size:0.75rem;color:var(--text-dim);margin-top:6px;">Tap habits below to update</div>
         `;
         todayStatus.style.background = "var(--surface2)";
-    } else {
-        todayStatus.innerHTML = "";
-        todayStatus.style.background = "none";
+
+        todayHabits.innerHTML = "";
+        todaySatisfaction.classList.add("hidden");
+        todayNote.classList.add("hidden");
+        saveBtn.classList.add("hidden");
+
+        document.getElementById("today-edit-btn").addEventListener("click", () => {
+            todayEditing = true;
+            renderToday();
+        });
+        return;
     }
+
+    // EXPANDED MODE: first time today or editing
+    todayStatus.innerHTML = "";
+    todayStatus.style.background = "none";
 
     // Render habit checklist grouped by category
     const grouped = {};
@@ -283,11 +297,16 @@ saveBtn.addEventListener("click", async () => {
     data.satisfaction_scores[today] = parseInt(slider.value);
     data.daily_notes[today] = noteInput.value.trim();
     await saveData();
+    todayEditing = false;
     todayStatus.innerHTML = '<div style="font-size:1rem;font-weight:600;color:var(--green);">Saved!</div>';
     todayStatus.style.background = "rgba(78,204,163,0.15)";
+    todayHabits.innerHTML = "";
+    todaySatisfaction.classList.add("hidden");
+    todayNote.classList.add("hidden");
+    saveBtn.classList.add("hidden");
     setTimeout(() => {
         renderToday();
-    }, 1500);
+    }, 1200);
 });
 
 // ============================================================
@@ -940,6 +959,10 @@ let satisfactionChartInstance = null;
 function renderProgressChart() {
     const canvas = document.getElementById("progress-chart");
     if (!canvas) return;
+    if (typeof Chart === "undefined") {
+        canvas.parentElement.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:40px 0;">Chart library loading... Please try again.</p>';
+        return;
+    }
 
     const allDates = Object.keys(data.records).sort();
     const habits = Object.keys(data.habits);
@@ -1009,6 +1032,10 @@ function renderProgressChart() {
 function renderSatisfactionChart() {
     const canvas = document.getElementById("satisfaction-chart");
     if (!canvas) return;
+    if (typeof Chart === "undefined") {
+        canvas.parentElement.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:40px 0;">Chart library loading... Please try again.</p>';
+        return;
+    }
 
     const dates = Object.keys(data.satisfaction_scores).sort();
     const scores = dates.map(d => data.satisfaction_scores[d]);
