@@ -71,40 +71,58 @@
 
             <!-- SETTINGS VIEW -->
             <section id="view-settings" class="view">
-                <h2>Habits</h2>
-                <div id="habits-list"></div>
-                <div class="add-habit-row">
-                    <input type="text" id="new-habit-input" placeholder="New habit name">
-                    <select id="new-habit-category">
-                        <option value="health">health</option>
-                        <option value="learning">learning</option>
-                        <option value="lifestyle">lifestyle</option>
-                        <option value="other">other</option>
-                    </select>
-                    <button id="add-habit-btn" class="btn-primary">Add</button>
+                <div class="settings-tabs">
+                    <button class="settings-tab active" data-stab="habits">Habits</button>
+                    <button class="settings-tab" data-stab="notifications">Notifications</button>
+                    <button class="settings-tab" data-stab="data">Data</button>
                 </div>
-
-                <h2>Data</h2>
-                <button id="export-json-btn" class="btn-secondary">Export JSON</button>
-                <button id="import-json-btn" class="btn-secondary">Import JSON</button>
-                <input type="file" id="import-file" accept=".json" class="hidden">
-                <button id="export-csv-btn" class="btn-secondary">Export CSV</button>
-                <button id="import-python-btn" class="btn-secondary">Import from Python version</button>
-                <input type="file" id="import-python-file" accept=".json" class="hidden">
-
-                <h2>Reminders</h2>
-                <div id="reminder-section">
-                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                        <label for="reminder-time" style="font-size:0.9rem;">Daily reminder at:</label>
-                        <input type="time" id="reminder-time" value="21:00" style="padding:8px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);color:var(--text);">
-                        <button id="reminder-enable-btn" class="btn-secondary" style="width:auto;margin:0;">Enable</button>
-                        <button id="reminder-disable-btn" class="btn-secondary hidden" style="width:auto;margin:0;">Disable</button>
+                <div id="settings-content">
+                    <!-- Habits tab -->
+                    <div id="stab-habits" class="settings-panel active">
+                        <div id="habits-list"></div>
+                        <div class="add-habit-row">
+                            <input type="text" id="new-habit-input" placeholder="New habit name">
+                            <select id="new-habit-category">
+                                <option value="health">health</option>
+                                <option value="learning">learning</option>
+                                <option value="lifestyle">lifestyle</option>
+                                <option value="other">other</option>
+                            </select>
+                            <button id="add-habit-btn" class="btn-primary">Add</button>
+                        </div>
                     </div>
-                    <div id="reminder-status" style="font-size:0.78rem;color:var(--text-dim);margin-top:6px;"></div>
-                </div>
 
-                <h2>Danger Zone</h2>
-                <button id="reset-all-btn" class="btn-danger">Reset All Data</button>
+                    <!-- Notifications tab -->
+                    <div id="stab-notifications" class="settings-panel">
+                        <h3>Daily Reminder</h3>
+                        <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:12px;">Get a notification to remind you to log your habits.</p>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                            <label for="reminder-time" style="font-size:0.9rem;">Time:</label>
+                            <input type="time" id="reminder-time" value="21:00" style="padding:8px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);color:var(--text);">
+                        </div>
+                        <div style="display:flex;gap:8px;margin-top:12px;">
+                            <button id="reminder-enable-btn" class="btn-primary" style="width:auto;">Enable</button>
+                            <button id="reminder-disable-btn" class="btn-danger hidden" style="width:auto;padding:12px 24px;">Disable</button>
+                        </div>
+                        <div id="reminder-status" style="font-size:0.85rem;color:var(--text-dim);margin-top:10px;"></div>
+                    </div>
+
+                    <!-- Data tab -->
+                    <div id="stab-data" class="settings-panel">
+                        <h3>Export</h3>
+                        <button id="export-json-btn" class="btn-secondary">Export JSON</button>
+                        <button id="export-csv-btn" class="btn-secondary">Export CSV</button>
+
+                        <h3 style="margin-top:20px;">Import</h3>
+                        <button id="import-json-btn" class="btn-secondary">Import JSON</button>
+                        <input type="file" id="import-file" accept=".json" class="hidden">
+                        <button id="import-python-btn" class="btn-secondary">Import from Python version</button>
+                        <input type="file" id="import-python-file" accept=".json" class="hidden">
+
+                        <h3 style="margin-top:20px;color:var(--red);">Danger Zone</h3>
+                        <button id="reset-all-btn" class="btn-danger">Reset All Data</button>
+                    </div>
+                </div>
             </section>
         </main>
 

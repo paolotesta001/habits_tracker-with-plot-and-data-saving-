@@ -553,13 +553,40 @@ main {
 .insight-negative { color: var(--red); }
 
 /* SETTINGS VIEW */
-#view-settings h2 {
+#view-settings h2, #view-settings h3 {
     font-size: 1rem;
     margin: 20px 0 12px;
     color: var(--accent-light);
 }
 
-#view-settings h2:first-child { margin-top: 0; }
+#view-settings h3:first-child { margin-top: 0; }
+
+.settings-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+}
+
+.settings-tab {
+    background: var(--surface);
+    border: none;
+    color: var(--text-dim);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.settings-tab.active {
+    background: var(--accent);
+    color: white;
+}
+
+.settings-panel { display: none; }
+.settings-panel.active { display: block; }
 
 .habit-item {
     display: flex;

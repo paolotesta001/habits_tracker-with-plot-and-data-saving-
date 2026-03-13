@@ -778,6 +778,18 @@ function renderInsights() {
 // ============================================================
 // SETTINGS VIEW
 // ============================================================
+const settingsTabs = document.querySelectorAll(".settings-tab");
+const settingsPanels = document.querySelectorAll(".settings-panel");
+
+settingsTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+        settingsTabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        settingsPanels.forEach(p => p.classList.remove("active"));
+        document.getElementById("stab-" + tab.dataset.stab).classList.add("active");
+    });
+});
+
 function renderSettings() {
     const list = document.getElementById("habits-list");
     const grouped = getHabitsByCategory(false);
