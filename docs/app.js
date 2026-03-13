@@ -927,6 +927,25 @@ document.getElementById("import-python-file").addEventListener("change", (e) => 
     e.target.value = "";
 });
 
+// Reset all data
+document.getElementById("reset-all-btn").addEventListener("click", async () => {
+    const wantSave = confirm("Do you want to export your data before resetting?\n\nClick OK to download a backup first, or Cancel to skip.");
+    if (wantSave) {
+        downloadFile("habit_tracker_backup.json", JSON.stringify(data, null, 2), "application/json");
+    }
+
+    const sure = confirm("Are you sure you want to delete ALL habits and data?\n\nThis cannot be undone.");
+    if (!sure) return;
+
+    data = emptyData();
+    await saveData();
+    todayChecksDate = "";
+    todayEditing = false;
+    renderToday();
+    renderSettings();
+    alert("All data has been reset.");
+});
+
 function downloadFile(name, content, type) {
     const blob = new Blob([content], { type });
     const a = document.createElement("a");
