@@ -1,4 +1,4 @@
-const CACHE_NAME = "habit-tracker-v19";
+const CACHE_NAME = "habit-tracker-v20";
 const ASSETS = [
     "./",
     "./index.html",
@@ -23,22 +23,6 @@ self.addEventListener("activate", (e) => {
         )
     );
     self.clients.claim();
-});
-
-// Handle scheduled reminder notifications
-self.addEventListener("message", (e) => {
-    if (e.data && e.data.type === "SCHEDULE_REMINDER") {
-        const { delayMs, todayKey } = e.data;
-        setTimeout(() => {
-            self.registration.showNotification("Habit Tracker", {
-                body: "Time to log your habits!",
-                icon: "./icons/icon-192.png",
-                badge: "./icons/icon-192.png",
-                tag: "habit-reminder-" + todayKey,
-                renotify: true,
-            });
-        }, delayMs);
-    }
 });
 
 self.addEventListener("notificationclick", (e) => {
