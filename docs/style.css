@@ -594,13 +594,18 @@ main {
     margin-left: 6px;
 }
 
+.habit-actions {
+    display: flex;
+    gap: 2px;
+}
+
 .habit-item button {
     background: none;
     border: none;
     color: var(--text-dim);
     cursor: pointer;
-    padding: 4px 8px;
-    font-size: 1rem;
+    padding: 4px 6px;
+    font-size: 0.9rem;
 }
 
 .habit-item button:hover { color: var(--text); }

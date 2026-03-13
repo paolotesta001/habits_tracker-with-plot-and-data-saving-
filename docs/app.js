@@ -791,13 +791,18 @@ function renderSettings() {
             const toggleLabel = meta.active ? "&#10005;" : "&#10003;";
             const toggleTitle = meta.active ? "Deactivate" : "Reactivate";
 
+            const esc = h.replace(/'/g, "\\'");
             html += `
                 <div class="habit-item">
                     <div class="habit-info">
                         <div class="name">${h}${inactiveBadge}</div>
                         <div class="cat">${cat} &middot; since ${meta.created}</div>
                     </div>
-                    <button title="${toggleTitle}" onclick="toggleHabit('${h.replace(/'/g, "\\'")}')">${toggleLabel}</button>
+                    <div class="habit-actions">
+                        <button title="Rename" onclick="renameHabit('${esc}')">&#9998;</button>
+                        <button title="${toggleTitle}" onclick="toggleHabit('${esc}')">${toggleLabel}</button>
+                        <button title="Delete" onclick="deleteHabit('${esc}')" style="color:var(--red);">&#128465;</button>
+                    </div>
                 </div>`;
         }
     }
@@ -808,6 +813,55 @@ function renderSettings() {
 window.toggleHabit = async function(name) {
     data.habits[name].active = !data.habits[name].active;
     await saveData();
+    renderSettings();
+};
+
+window.renameHabit = async function(oldName) {
+    const newName = prompt(`Rename "${oldName}" to:`, oldName);
+    if (!newName || newName.trim() === "" || newName.trim() === oldName) return;
+    const trimmed = newName.trim();
+    if (data.habits[trimmed]) { alert("A habit with that name already exists."); return; }
+
+    // Copy habit metadata
+    data.habits[trimmed] = { ...data.habits[oldName] };
+    delete data.habits[oldName];
+
+    // Update all records
+    for (const d in data.records) {
+        if (oldName in data.records[d]) {
+            data.records[d][trimmed] = data.records[d][oldName];
+            delete data.records[d][oldName];
+        }
+    }
+
+    // Update categories
+    for (const cat in data.categories) {
+        const idx = data.categories[cat].indexOf(oldName);
+        if (idx !== -1) data.categories[cat][idx] = trimmed;
+    }
+
+    await saveData();
+    todayChecksDate = ""; // force refresh
+    renderSettings();
+};
+
+window.deleteHabit = async function(name) {
+    if (!confirm(`Delete "${name}" and all its history?\n\nThis cannot be undone.`)) return;
+
+    delete data.habits[name];
+
+    // Remove from all records
+    for (const d in data.records) {
+        delete data.records[d][name];
+    }
+
+    // Remove from categories
+    for (const cat in data.categories) {
+        data.categories[cat] = data.categories[cat].filter(h => h !== name);
+    }
+
+    await saveData();
+    todayChecksDate = ""; // force refresh
     renderSettings();
 };
 
@@ -1118,6 +1172,73 @@ function renderSatisfactionChart() {
 }
 
 // ============================================================
+// REMINDERS
+// ============================================================
+const reminderTimeInput = document.getElementById("reminder-time");
+const reminderEnableBtn = document.getElementById("reminder-enable-btn");
+const reminderDisableBtn = document.getElementById("reminder-disable-btn");
+const reminderStatus = document.getElementById("reminder-status");
+let reminderInterval = null;
+
+function loadReminder() {
+    const saved = localStorage.getItem("habit_reminder");
+    if (saved) {
+        const { time, enabled } = JSON.parse(saved);
+        reminderTimeInput.value = time;
+        if (enabled) {
+            reminderEnableBtn.classList.add("hidden");
+            reminderDisableBtn.classList.remove("hidden");
+            reminderStatus.textContent = `Reminder active at ${time} daily`;
+            startReminderCheck(time);
+        }
+    }
+}
+
+function startReminderCheck(time) {
+    if (reminderInterval) clearInterval(reminderInterval);
+    reminderInterval = setInterval(() => {
+        const now = new Date();
+        const nowTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+        const todayKey = todayStr();
+        const alreadyNotified = localStorage.getItem("habit_reminder_last") === todayKey;
+        if (nowTime === time && !alreadyNotified) {
+            localStorage.setItem("habit_reminder_last", todayKey);
+            if (Notification.permission === "granted") {
+                new Notification("Habit Tracker", { body: "Time to log your habits!", icon: "icons/icon-192.png" });
+            }
+        }
+    }, 30000); // check every 30s
+}
+
+reminderEnableBtn.addEventListener("click", async () => {
+    if (!("Notification" in window)) {
+        alert("Your browser does not support notifications.");
+        return;
+    }
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") {
+        alert("Notification permission denied. Please allow notifications in your browser settings.");
+        return;
+    }
+    const time = reminderTimeInput.value;
+    localStorage.setItem("habit_reminder", JSON.stringify({ time, enabled: true }));
+    reminderEnableBtn.classList.add("hidden");
+    reminderDisableBtn.classList.remove("hidden");
+    reminderStatus.textContent = `Reminder active at ${time} daily`;
+    startReminderCheck(time);
+    // Show a test notification
+    new Notification("Habit Tracker", { body: `Reminder set for ${time} daily!`, icon: "icons/icon-192.png" });
+});
+
+reminderDisableBtn.addEventListener("click", () => {
+    localStorage.setItem("habit_reminder", JSON.stringify({ time: reminderTimeInput.value, enabled: false }));
+    if (reminderInterval) clearInterval(reminderInterval);
+    reminderEnableBtn.classList.remove("hidden");
+    reminderDisableBtn.classList.add("hidden");
+    reminderStatus.textContent = "Reminder disabled";
+});
+
+// ============================================================
 // SERVICE WORKER
 // ============================================================
 if ("serviceWorker" in navigator) {
@@ -1131,4 +1252,5 @@ if ("serviceWorker" in navigator) {
     data = await loadData();
     document.getElementById("header-date").textContent = todayStr();
     renderToday();
+    loadReminder();
 })();
