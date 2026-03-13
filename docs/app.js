@@ -1210,8 +1210,23 @@ const reminderDisableBtn = document.getElementById("reminder-disable-btn");
 const reminderStatus = document.getElementById("reminder-status");
 let reminderInterval = null;
 
+// Save reminder config to IndexedDB so the service worker can read it
+async function saveReminderConfig(time, enabled, lastNotified) {
+    const db = await openDB();
+    const config = { time, enabled, lastNotified: lastNotified || null };
+    await idbPut("habit_reminder", config);
+    // Also notify the SW immediately
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: "REMINDER_UPDATED" });
+    }
+}
+
+async function getReminderConfig() {
+    const db = await openDB();
+    return await idbGet("habit_reminder");
+}
+
 function showNotification(title, body) {
-    // Use service worker notification (works on mobile + background)
     if (navigator.serviceWorker) {
         navigator.serviceWorker.ready.then((reg) => {
             reg.showNotification(title, {
@@ -1222,56 +1237,53 @@ function showNotification(title, body) {
                 renotify: true,
             });
         });
-    } else if (Notification.permission === "granted") {
-        new Notification(title, { body, icon: "./icons/icon-192.png" });
     }
 }
 
-function loadReminder() {
-    const saved = localStorage.getItem("habit_reminder");
-    if (saved) {
-        const { time, enabled } = JSON.parse(saved);
-        reminderTimeInput.value = time;
-        if (enabled) {
+async function loadReminder() {
+    // Migrate from localStorage if needed
+    const legacy = localStorage.getItem("habit_reminder");
+    if (legacy) {
+        const { time, enabled } = JSON.parse(legacy);
+        await saveReminderConfig(time, enabled, localStorage.getItem("habit_reminder_last"));
+        localStorage.removeItem("habit_reminder");
+        localStorage.removeItem("habit_reminder_last");
+    }
+    const config = await getReminderConfig();
+    if (config) {
+        reminderTimeInput.value = config.time;
+        if (config.enabled) {
             reminderEnableBtn.classList.add("hidden");
             reminderDisableBtn.classList.remove("hidden");
-            reminderStatus.textContent = `Reminder active at ${time} daily`;
-            startReminderCheck(time);
+            reminderStatus.textContent = `Reminder active at ${config.time} daily`;
+            startReminderCheck(config.time);
         }
     }
 }
 
-function checkAndNotify(time) {
+async function checkAndNotify(time) {
     const now = new Date();
     const [h, m] = time.split(":").map(Number);
     const nowMinutes = now.getHours() * 60 + now.getMinutes();
     const targetMinutes = h * 60 + m;
-    // Fire if we're within 2 minutes past the target (catches missed exact checks)
-    if (nowMinutes >= targetMinutes && nowMinutes <= targetMinutes + 2) {
-        const tk = todayStr();
-        if (localStorage.getItem("habit_reminder_last") !== tk) {
-            localStorage.setItem("habit_reminder_last", tk);
-            showNotification("Habit Tracker", "Time to log your habits!");
-        }
+    const tk = todayStr();
+    const config = await getReminderConfig();
+    if (nowMinutes >= targetMinutes && config && config.lastNotified !== tk) {
+        await saveReminderConfig(time, true, tk);
+        showNotification("Habit Tracker", "Time to log your habits!");
     }
 }
 
 function startReminderCheck(time) {
     if (reminderInterval) clearInterval(reminderInterval);
-    // Check immediately in case we just opened the app past the reminder time
     checkAndNotify(time);
-    // Check every 30 seconds
     reminderInterval = setInterval(() => checkAndNotify(time), 30000);
 }
 
-// When app comes back to foreground, check immediately
-document.addEventListener("visibilitychange", () => {
+document.addEventListener("visibilitychange", async () => {
     if (document.visibilityState === "visible") {
-        const saved = localStorage.getItem("habit_reminder");
-        if (saved) {
-            const { time, enabled } = JSON.parse(saved);
-            if (enabled) checkAndNotify(time);
-        }
+        const config = await getReminderConfig();
+        if (config && config.enabled) checkAndNotify(config.time);
     }
 });
 
@@ -1286,17 +1298,17 @@ reminderEnableBtn.addEventListener("click", async () => {
         return;
     }
     const time = reminderTimeInput.value;
-    localStorage.setItem("habit_reminder", JSON.stringify({ time, enabled: true }));
+    await saveReminderConfig(time, true, null);
     reminderEnableBtn.classList.add("hidden");
     reminderDisableBtn.classList.remove("hidden");
     reminderStatus.textContent = `Reminder active at ${time} daily`;
     startReminderCheck(time);
-    // Show a test notification via service worker
     showNotification("Habit Tracker", `Reminder set for ${time} daily!`);
 });
 
-reminderDisableBtn.addEventListener("click", () => {
-    localStorage.setItem("habit_reminder", JSON.stringify({ time: reminderTimeInput.value, enabled: false }));
+reminderDisableBtn.addEventListener("click", async () => {
+    const time = reminderTimeInput.value;
+    await saveReminderConfig(time, false, null);
     if (reminderInterval) clearInterval(reminderInterval);
     reminderEnableBtn.classList.remove("hidden");
     reminderDisableBtn.classList.add("hidden");
@@ -1307,7 +1319,18 @@ reminderDisableBtn.addEventListener("click", () => {
 // SERVICE WORKER
 // ============================================================
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js");
+    navigator.serviceWorker.register("sw.js").then(async (reg) => {
+        // Register periodic background sync for reminders (Chrome Android)
+        if ("periodicSync" in reg) {
+            try {
+                await reg.periodicSync.register("habit-reminder-sync", {
+                    minInterval: 60 * 60 * 1000, // 1 hour
+                });
+            } catch (e) {
+                // periodicSync not granted or not supported
+            }
+        }
+    });
 }
 
 // ============================================================
