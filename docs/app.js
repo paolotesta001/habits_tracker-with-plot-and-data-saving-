@@ -1082,7 +1082,25 @@ function renderProgressChart() {
             maintainAspectRatio: true,
             plugins: {
                 title: { display: true, text: "Cumulative trend of habits", color: textColor, font: { size: 16 } },
-                legend: { labels: { color: textColor, font: { size: 11 } } },
+                legend: {
+                    labels: { color: textColor, font: { size: 11 } },
+                    onClick: (e, legendItem, legend) => {
+                        const chart = legend.chart;
+                        const ci = legendItem.datasetIndex;
+                        const allVisible = chart.data.datasets.every((ds, i) => !chart.getDatasetMeta(i).hidden);
+                        const onlyThisVisible = chart.data.datasets.every((ds, i) =>
+                            i === ci ? !chart.getDatasetMeta(i).hidden : chart.getDatasetMeta(i).hidden
+                        );
+                        if (onlyThisVisible) {
+                            // Click again on the solo habit → show all
+                            chart.data.datasets.forEach((ds, i) => { chart.getDatasetMeta(i).hidden = false; });
+                        } else {
+                            // Show only the clicked habit
+                            chart.data.datasets.forEach((ds, i) => { chart.getDatasetMeta(i).hidden = i !== ci; });
+                        }
+                        chart.update();
+                    },
+                },
             },
             scales: {
                 x: {
