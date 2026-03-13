@@ -1208,7 +1208,7 @@ const reminderTimeInput = document.getElementById("reminder-time");
 const reminderEnableBtn = document.getElementById("reminder-enable-btn");
 const reminderDisableBtn = document.getElementById("reminder-disable-btn");
 const reminderStatus = document.getElementById("reminder-status");
-let reminderInterval = null;
+let reminderTimeout = null;
 
 function loadReminder() {
     const saved = localStorage.getItem("habit_reminder");
@@ -1219,26 +1219,67 @@ function loadReminder() {
             reminderEnableBtn.classList.add("hidden");
             reminderDisableBtn.classList.remove("hidden");
             reminderStatus.textContent = `Reminder active at ${time} daily`;
-            startReminderCheck(time);
+            scheduleReminder(time);
         }
     }
 }
 
-function startReminderCheck(time) {
-    if (reminderInterval) clearInterval(reminderInterval);
-    reminderInterval = setInterval(() => {
-        const now = new Date();
-        const nowTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-        const todayKey = todayStr();
-        const alreadyNotified = localStorage.getItem("habit_reminder_last") === todayKey;
-        if (nowTime === time && !alreadyNotified) {
-            localStorage.setItem("habit_reminder_last", todayKey);
+function getDelayUntil(timeStr) {
+    const [h, m] = timeStr.split(":").map(Number);
+    const now = new Date();
+    const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
+    if (target <= now) target.setDate(target.getDate() + 1); // next day if time already passed
+    return { delayMs: target - now, todayKey: `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, "0")}-${String(target.getDate()).padStart(2, "0")}` };
+}
+
+function scheduleReminder(time) {
+    if (reminderTimeout) clearTimeout(reminderTimeout);
+
+    const { delayMs, todayKey } = getDelayUntil(time);
+    const alreadyNotified = localStorage.getItem("habit_reminder_last") === todayKey;
+
+    // Send to service worker for background notification
+    if (navigator.serviceWorker && navigator.serviceWorker.controller && !alreadyNotified) {
+        navigator.serviceWorker.controller.postMessage({
+            type: "SCHEDULE_REMINDER",
+            delayMs,
+            todayKey,
+        });
+    }
+
+    // Also set a local fallback timeout
+    const scheduleMs = alreadyNotified ? delayMs + 86400000 : delayMs;
+    reminderTimeout = setTimeout(() => {
+        const tk = todayStr();
+        if (localStorage.getItem("habit_reminder_last") !== tk) {
+            localStorage.setItem("habit_reminder_last", tk);
             if (Notification.permission === "granted") {
-                new Notification("Habit Tracker", { body: "Time to log your habits!", icon: "icons/icon-192.png" });
+                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: "SCHEDULE_REMINDER",
+                        delayMs: 0,
+                        todayKey: tk,
+                    });
+                } else {
+                    new Notification("Habit Tracker", { body: "Time to log your habits!", icon: "icons/icon-192.png" });
+                }
             }
         }
-    }, 30000); // check every 30s
+        // Schedule next day
+        scheduleReminder(time);
+    }, scheduleMs);
 }
+
+// Re-schedule when app comes back to foreground
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+        const saved = localStorage.getItem("habit_reminder");
+        if (saved) {
+            const { time, enabled } = JSON.parse(saved);
+            if (enabled) scheduleReminder(time);
+        }
+    }
+});
 
 reminderEnableBtn.addEventListener("click", async () => {
     if (!("Notification" in window)) {
@@ -1262,7 +1303,7 @@ reminderEnableBtn.addEventListener("click", async () => {
 
 reminderDisableBtn.addEventListener("click", () => {
     localStorage.setItem("habit_reminder", JSON.stringify({ time: reminderTimeInput.value, enabled: false }));
-    if (reminderInterval) clearInterval(reminderInterval);
+    if (reminderTimeout) clearTimeout(reminderTimeout);
     reminderEnableBtn.classList.remove("hidden");
     reminderDisableBtn.classList.add("hidden");
     reminderStatus.textContent = "Reminder disabled";
