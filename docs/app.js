@@ -204,11 +204,27 @@ function renderToday() {
         }
     }
 
+    // Build summary
+    const doneCount = active.filter(h => todayChecks[h]).length;
+    const totalCount = active.length;
+    const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+
     if (existing) {
-        todayStatus.textContent = "You already logged today. Tap to edit.";
+        const doneList = active.filter(h => existing[h]);
+        const missedList = active.filter(h => existing[h] === false);
+        const summaryColor = pct === 100 ? "var(--green)" : pct >= 50 ? "var(--yellow)" : "var(--red)";
+        todayStatus.innerHTML = `
+            <div style="font-size:1.1rem;font-weight:600;margin-bottom:6px;">${doneCount}/${totalCount} done <span style="color:${summaryColor}">(${pct}%)</span></div>
+            <div class="today-summary-bar" style="height:6px;border-radius:3px;background:var(--surface);overflow:hidden;margin-bottom:8px;">
+                <div style="width:${pct}%;height:100%;background:${summaryColor};border-radius:3px;transition:width 0.3s;"></div>
+            </div>
+            ${doneList.length > 0 ? `<div style="font-size:0.78rem;color:var(--green);margin-bottom:2px;">&#10003; ${doneList.join(", ")}</div>` : ""}
+            ${missedList.length > 0 ? `<div style="font-size:0.78rem;color:var(--text-dim);">&#9711; ${missedList.join(", ")}</div>` : ""}
+            <div style="font-size:0.75rem;color:var(--text-dim);margin-top:6px;">Tap habits below to update</div>
+        `;
         todayStatus.style.background = "var(--surface2)";
     } else {
-        todayStatus.textContent = "";
+        todayStatus.innerHTML = "";
         todayStatus.style.background = "none";
     }
 
@@ -267,11 +283,9 @@ saveBtn.addEventListener("click", async () => {
     data.satisfaction_scores[today] = parseInt(slider.value);
     data.daily_notes[today] = noteInput.value.trim();
     await saveData();
-    todayStatus.textContent = "Saved!";
+    todayStatus.innerHTML = '<div style="font-size:1rem;font-weight:600;color:var(--green);">Saved!</div>';
     todayStatus.style.background = "rgba(78,204,163,0.15)";
-    todayStatus.style.color = "var(--green)";
     setTimeout(() => {
-        todayStatus.style.color = "";
         renderToday();
     }, 1500);
 });
@@ -451,6 +465,14 @@ function renderStats() {
         case "streaks": content.innerHTML = renderStreaks(); break;
         case "monthly": content.innerHTML = renderMonthly(); break;
         case "insights": content.innerHTML = renderInsights(); break;
+        case "progress-plot":
+            content.innerHTML = '<canvas id="progress-chart"></canvas>';
+            renderProgressChart();
+            break;
+        case "satisfaction-plot":
+            content.innerHTML = '<canvas id="satisfaction-chart"></canvas>';
+            renderSatisfactionChart();
+            break;
     }
 
     // Monthly nav listeners
@@ -901,6 +923,152 @@ function csvEscape(str) {
         return '"' + str.replace(/"/g, '""') + '"';
     }
     return str;
+}
+
+// ============================================================
+// CHARTS
+// ============================================================
+const CHART_COLORS = [
+    "#4ecda3","#f5a623","#e74c3c","#9b59b6","#3498db",
+    "#e67e22","#1abc9c","#e84393","#636e72","#fdcb6e",
+    "#00cec9","#6c5ce7","#d63031","#0984e3","#fab1a0",
+];
+
+let progressChartInstance = null;
+let satisfactionChartInstance = null;
+
+function renderProgressChart() {
+    const canvas = document.getElementById("progress-chart");
+    if (!canvas) return;
+
+    const allDates = Object.keys(data.records).sort();
+    const habits = Object.keys(data.habits);
+
+    if (allDates.length === 0 || habits.length === 0) {
+        canvas.parentElement.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:40px 0;">No data to display.</p>';
+        return;
+    }
+
+    const datasets = [];
+    habits.forEach((habit, i) => {
+        const created = data.habits[habit].created;
+        let cumulative = 0;
+        const points = [];
+        for (const d of allDates) {
+            if (d < created) continue;
+            if (data.records[d]?.[habit]) cumulative++;
+            points.push({ x: d, y: cumulative });
+        }
+        if (points.length > 0) {
+            datasets.push({
+                label: habit,
+                data: points,
+                borderColor: CHART_COLORS[i % CHART_COLORS.length],
+                backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
+                borderWidth: 2,
+                pointRadius: allDates.length > 30 ? 1 : 3,
+                tension: 0.1,
+                fill: false,
+            });
+        }
+    });
+
+    const isLight = document.documentElement.classList.contains("light");
+    const textColor = isLight ? "#333" : "#ccc";
+    const gridColor = isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)";
+
+    if (progressChartInstance) progressChartInstance.destroy();
+    progressChartInstance = new Chart(canvas, {
+        type: "line",
+        data: { datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                title: { display: true, text: "Cumulative trend of habits", color: textColor, font: { size: 16 } },
+                legend: { labels: { color: textColor, font: { size: 11 } } },
+            },
+            scales: {
+                x: {
+                    type: "category",
+                    labels: allDates,
+                    ticks: { color: textColor, maxRotation: 45, maxTicksLimit: 15 },
+                    grid: { color: gridColor },
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: textColor },
+                    grid: { color: gridColor },
+                    title: { display: true, text: "Cumulative completions", color: textColor },
+                },
+            },
+        },
+    });
+}
+
+function renderSatisfactionChart() {
+    const canvas = document.getElementById("satisfaction-chart");
+    if (!canvas) return;
+
+    const dates = Object.keys(data.satisfaction_scores).sort();
+    const scores = dates.map(d => data.satisfaction_scores[d]);
+
+    if (dates.length === 0) {
+        canvas.parentElement.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:40px 0;">No satisfaction data to display.</p>';
+        return;
+    }
+
+    const isLight = document.documentElement.classList.contains("light");
+    const textColor = isLight ? "#333" : "#ccc";
+    const gridColor = isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)";
+
+    if (satisfactionChartInstance) satisfactionChartInstance.destroy();
+    satisfactionChartInstance = new Chart(canvas, {
+        type: "line",
+        data: {
+            labels: dates,
+            datasets: [{
+                label: "Satisfaction",
+                data: scores,
+                borderColor: "#9b59b6",
+                backgroundColor: "rgba(155,89,182,0.15)",
+                borderWidth: 2,
+                pointRadius: dates.length > 30 ? 2 : 4,
+                pointBackgroundColor: "#9b59b6",
+                tension: 0.1,
+                fill: true,
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                title: { display: true, text: "Daily Satisfaction Score Trend", color: textColor, font: { size: 16 } },
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        afterLabel: (ctx) => {
+                            const d = dates[ctx.dataIndex];
+                            const note = data.daily_notes[d];
+                            return note ? `Note: ${note}` : "";
+                        },
+                    },
+                },
+            },
+            scales: {
+                x: {
+                    ticks: { color: textColor, maxRotation: 45, maxTicksLimit: 15 },
+                    grid: { color: gridColor },
+                },
+                y: {
+                    min: 0, max: 100,
+                    ticks: { color: textColor },
+                    grid: { color: gridColor },
+                    title: { display: true, text: "Satisfaction Score (1-100)", color: textColor },
+                },
+            },
+        },
+    });
 }
 
 // ============================================================
